@@ -60,6 +60,12 @@ export default class Publishing extends React.Component {
     return document.querySelector('.preview-css pre').textContent;
   }
 
+  handleCheckbox(e) {
+    this.setState({
+      isSccs: e.target.checked
+    });
+  }
+
   render() {
     return (
       <div>
@@ -86,6 +92,7 @@ export default class Publishing extends React.Component {
               <ClipboardButton option-text={this.getCss} onSuccess={this.onSuccess}>
                 copy
               </ClipboardButton>
+              <input type="checkbox" checked={this.state.isSccs} onChange={this.handleCheckbox.bind(this)} />sccs
               <pre>
 {`.${this.props.imageClassName} {
   position: relative;
