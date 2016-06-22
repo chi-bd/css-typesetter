@@ -18,6 +18,7 @@ export default class Publishing extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isSccs: true,
       modalIsOpen: false,
       json: ''
     }
@@ -92,15 +93,22 @@ export default class Publishing extends React.Component {
   background-image: url(<IMAGE_URL>);
   width: ${this.props.previewWidth}px;
   height: ${this.props.previewHeight}px;
-  .${this.props.textClassName} {
+`}
+{((self) => {
+	return self.state.isSccs ? `` : `}\n.${self.props.imageClassName}`;
+})(this)}
+{`  .${this.props.textClassName} {
     position: absolute;
     word-wrap: break-word;
     transform-origin: 0 0;
-  }
 `}
-                {(() => {
+{((self) => {
+	return self.state.isSccs ? `  }\n` : ``;
+})(this)}
+                {((self) => {
                   return this.props.texts.map((text, i) => {
-                    let css =`  .${text.key} {
+                    let css = self.state.isSccs ? `` : `}\n.${self.props.imageClassName}`;
+                    css += `  .${text.key} {
     left: ${text.x}px;
     top: ${text.y}px;
     width: ${text.width}px;
@@ -118,14 +126,14 @@ export default class Publishing extends React.Component {
                     if (text.textAlign != 'left') {
                       css += `\n    text-align: ${text.textAlign};`;
                     }
-                    css += '\n  }\n';
+                    css += self.state.isSccs ? '\n  }\n' : '\n';
                     return (
                       <span key={text.key}>
                         {css}
                       </span>
                     );
                   });
-                })()}
+                })(this)}
                 {'}'}
               </pre>
             </div>
