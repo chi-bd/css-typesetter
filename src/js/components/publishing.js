@@ -46,6 +46,7 @@ export default class Publishing extends React.Component {
     this.setState({
       json: JSON.stringify(this.props.texts)
     });
+    return this.state.json;
   }
 
   onSuccess() {
@@ -149,7 +150,7 @@ export default class Publishing extends React.Component {
         <div className="json-export">
           <div>
             <button onClick={this.handleImport.bind(this)}>import json</button>
-            <button onClick={this.handleExport.bind(this)}>export json</button>
+            <ClipboardButton option-text={this.handleExport.bind(this)} onSuccess={this.onSuccess}>export json</ClipboardButton>
           </div>
           <textarea value={this.state.json} onChange={this.handleInput.bind(this)} />
         </div>
