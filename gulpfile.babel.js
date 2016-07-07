@@ -5,6 +5,8 @@ import watchify from 'watchify';
 import sass from 'gulp-sass';
 import webserver from 'gulp-webserver';
 import gutil from 'gulp-util';
+import streamqueue from 'streamqueue';
+import concat from 'gulp-concat';
 
 function bundle(watch = false) {
   fs.existsSync('dist') || fs.mkdirSync('dist');
@@ -21,9 +23,13 @@ function bundle(watch = false) {
 
 gulp.task('build:js', () => bundle());
 gulp.task('build:css', () => {
-  gulp.src('src/scss/**/*.scss')
-    .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('dist/'));
+  streamqueue({objectMode: true},
+    gulp.src('src/scss/**/*.scss')
+      .pipe(sass().on('error', sass.logError)),
+    gulp.src('node_modules/humane-js/themes/libnotify.css')
+  )
+    .pipe(concat('app.css'))
+    .pipe(gulp.dest('dist/'))
 });
 gulp.task('build', ['build:js', 'build:css']);
 

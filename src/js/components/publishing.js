@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import Modal from 'react-modal';
 import ClipboardButton from 'react-clipboard.js';
+import humane from 'humane-js'
 
 export default class Publishing extends React.Component {
   get modalStyle() {
@@ -50,7 +51,8 @@ export default class Publishing extends React.Component {
   }
 
   onSuccess() {
-    alert('copied!');
+    //alert('copied!');
+    humane.log('copied!');
   }
 
   getHtml() {
