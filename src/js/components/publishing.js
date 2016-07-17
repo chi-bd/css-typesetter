@@ -55,12 +55,52 @@ export default class Publishing extends React.Component {
     humane.log('copied!');
   }
 
-  getHtml() {
-    return document.querySelector('.preview-html pre').textContent;
-  }
+  getRawHtml() {
+    return (
+      `<div class="${this.props.imageClassName}">\n` +
+        this.props.texts.map((text) => {
+          return `  <div class="${`${this.props.textClassName} ${text.key}`}">${text.value}</div>\n`;
+        }).join('') +
+      '</div>'
+    );
+  }  
 
-  getCss() {
-    return document.querySelector('.preview-css pre').textContent;
+  getRawCss() {
+    return (
+    `.${this.props.imageClassName} {
+  position: relative;
+  background-size: 100% auto;
+  background-image: url(<IMAGE_URL>);
+  width: ${this.props.previewWidth}px;
+  height: ${this.props.previewHeight}px;
+  .${this.props.textClassName} {
+    position: absolute;
+    word-wrap: break-word;
+    transform-origin: 0 0;
+  }
+` + this.props.texts.map((text, i) => {
+      let css =`  .${text.key} {
+    left: ${text.x}px;
+    top: ${text.y}px;
+    width: ${text.width}px;
+    height: ${text.height}px;
+    font-size: ${text.fontSize}px;`;
+        if (text.scale !== 1) {
+          css += `\n    transform: scale(${text.scale});`;
+        }
+        if (text.lineHeight) {
+          css += `\n    line-height: ${text.lineHeight}px;`;
+        }
+        if (text.letterSpacing) {
+          css += `\n    letter-spacing: ${text.letterSpacing}px;`;
+        }
+        if (text.textAlign != 'left') {
+          css += `\n    text-align: ${text.textAlign};`;
+        }
+        css += '\n  }\n';
+        return (css);
+      }).join('') +
+'}');
   }
 
   handleCheckbox(e) {
@@ -80,72 +120,17 @@ export default class Publishing extends React.Component {
         >
           <div className="code-preview">
             <div className="preview-html">
-              <ClipboardButton option-text={this.getHtml} onSuccess={this.onSuccess}>
+              <ClipboardButton option-text={this.getRawHtml.bind(this)} onSuccess={this.onSuccess}>
                 copy
               </ClipboardButton>
-              <pre>
-                {`<div class="${this.props.imageClassName}">\n`}
-                  {this.props.texts.map((text) => {
-                    return `  <div class="${`${this.props.textClassName} ${text.key}`}">${text.value}</div>\n`;
-                  })}
-                {"</div>"}
-              </pre>
+              <pre>{this.getRawHtml()}</pre>
             </div>
             <div className="preview-css">
-              <ClipboardButton option-text={this.getCss} onSuccess={this.onSuccess}>
+              <ClipboardButton option-text={this.getRawCss.bind(this)} onSuccess={this.onSuccess}>
                 copy
               </ClipboardButton>
               <input type="checkbox" checked={this.state.isSccs} onChange={this.handleCheckbox.bind(this)} />sccs
-              <pre>
-{`.${this.props.imageClassName} {
-  position: relative;
-  background-size: 100% auto;
-  background-image: url(<IMAGE_URL>);
-  width: ${this.props.previewWidth}px;
-  height: ${this.props.previewHeight}px;
-`}
-{((self) => {
-	return self.state.isSccs ? `` : `}\n.${self.props.imageClassName}`;
-})(this)}
-{`  .${this.props.textClassName} {
-    position: absolute;
-    word-wrap: break-word;
-    transform-origin: 0 0;
-`}
-{((self) => {
-	return self.state.isSccs ? `  }\n` : ``;
-})(this)}
-                {((self) => {
-                  return this.props.texts.map((text, i) => {
-                    let css = self.state.isSccs ? `` : `}\n.${self.props.imageClassName}`;
-                    css += `  .${text.key} {
-    left: ${text.x}px;
-    top: ${text.y}px;
-    width: ${text.width}px;
-    height: ${text.height}px;
-    font-size: ${text.fontSize}px;`;
-                    if (text.scale !== 1) {
-                      css += `\n    transform: scale(${text.scale});`;
-                    }
-                    if (text.lineHeight) {
-                      css += `\n    line-height: ${text.lineHeight}px;`;
-                    }
-                    if (text.letterSpacing) {
-                      css += `\n    letter-spacing: ${text.letterSpacing}px;`;
-                    }
-                    if (text.textAlign != 'left') {
-                      css += `\n    text-align: ${text.textAlign};`;
-                    }
-                    css += self.state.isSccs ? '\n  }\n' : '\n';
-                    return (
-                      <span key={text.key}>
-                        {css}
-                      </span>
-                    );
-                  });
-                })(this)}
-                {'}'}
-              </pre>
+              <pre>{this.getRawCss()}</pre>
             </div>
           </div>
         </Modal>
