@@ -66,20 +66,23 @@ export default class Publishing extends React.Component {
   }  
 
   getRawCss() {
+    let self = this;
     return (
-    `.${this.props.imageClassName} {
+`.${this.props.imageClassName} {
   position: relative;
   background-size: 100% auto;
   background-image: url(<IMAGE_URL>);
   width: ${this.props.previewWidth}px;
   height: ${this.props.previewHeight}px;
-  .${this.props.textClassName} {
+` + (this.state.isSccs ? `` : `}\n.${this.props.imageClassName}`) +
+`  .${this.props.textClassName} {
     position: absolute;
     word-wrap: break-word;
     transform-origin: 0 0;
-  }
-` + this.props.texts.map((text, i) => {
-      let css =`  .${text.key} {
+` + (this.state.isSccs ? `  }\n` : ``)
+   + this.props.texts.map((text, i) => {
+      let css = self.state.isSccs ? `` : `}\n.${self.props.imageClassName}`;
+      css += `  .${text.key} {
     left: ${text.x}px;
     top: ${text.y}px;
     width: ${text.width}px;
@@ -97,7 +100,7 @@ export default class Publishing extends React.Component {
         if (text.textAlign != 'left') {
           css += `\n    text-align: ${text.textAlign};`;
         }
-        css += '\n  }\n';
+        css += self.state.isSccs ? '\n  }\n' : '\n';
         return (css);
       }).join('') +
 '}');
